@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Formulario de Estudio Bíblico</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <header class="main-header">
+        <h1>Estudio Bíblico Personal</h1>
+        <p>Pasaje leído: <strong>Juan 1:1-15</strong></p>
+    </header>
+
+    <div class="tabla-wrapper">
+        <form id="formEstudio" class="tabla-estudio" style="padding:1rem; display:block;">
+
+            <label>1️⃣ ¿Qué está pasando en el pasaje?</label>
+            <textarea required></textarea>
+
+            <label>2️⃣ ¿Qué me enseña acerca de Dios?</label>
+            <textarea required></textarea>
+
+            <label>3️⃣ ¿Qué me enseña acerca del ser humano?</label>
+            <textarea required></textarea>
+
+            <label>4️⃣ ¿Qué debo cambiar o aplicar?</label>
+            <textarea required></textarea>
+
+            <label>5️⃣ Escribí una oración basada en lo leído:</label>
+            <textarea required></textarea>
+
+            <button type="submit" class="btn-responder" style="margin-top:1rem;">
+                Enviar Respuestas
+            </button>
+
+        </form>
+    </div>
+    <script>
+        const SHEET_WEBAPP_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRA3G3mUJqYv04MxWwEes4s8VLUSrmBAa_vFMX0ENGYKx4bxGUCZClJGh2nDKez0FMOVFhnyc9nlRjE/pub?gid=0&single=true&output=csv";
+        // Esta URL la vas a obtener desde Google Apps Script (te explico abajo)
+
+        document.getElementById("formEstudio").addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const pasaje = "Juan 1:1-15";
+            const fecha = new Date().toLocaleDateString("es-AR");
+
+            const respuestas = Array.from(document.querySelectorAll("textarea")).map(t => t.value.trim());
+
+            const mensaje =
+                `📖 *Estudio Bíblico Personal*
+🗓 Fecha: ${fecha}
+📍 Pasaje: ${pasaje}
+
+━━━━━━━━━━━━━━━
+
+*1️⃣ ¿Qué está pasando?*
+${respuestas[0]}
+
+*2️⃣ ¿Qué me enseña acerca de Dios?*
+${respuestas[1]}
+
+*3️⃣ ¿Qué me enseña acerca del ser humano?*
+${respuestas[2]}
+
+*4️⃣ ¿Qué debo aplicar?*
+${respuestas[3]}
+
+*5️⃣ Oración personal*
+${respuestas[4]}
+
+━━━━━━━━━━━━━━━
+🔥 #EstudioConstante`;
+
+            // Copiar al portapapeles
+            await navigator.clipboard.writeText(mensaje);
+
+            // Enviar a Google Sheets
+            try {
+                await fetch(SHEET_WEBAPP_URL, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        fecha,
+                        pasaje,
+                        p1: respuestas[0],
+                        p2: respuestas[1],
+                        p3: respuestas[2],
+                        p4: respuestas[3],
+                        p5: respuestas[4],
+                        estado: "Respondido"
+                    })
+                });
+            } catch (err) {
+                console.log("Error enviando a Sheets");
+            }
+
+            // Abrir WhatsApp
+            const texto = encodeURIComponent(mensaje);
+            window.open(`https://wa.me/?text=${texto}`, "_blank");
+
+            alert("Mensaje copiado ✅ y marcado como respondido.");
+        });
+        function doPost(e) {
+            const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+            const data = JSON.parse(e.postData.contents);
+
+            sheet.appendRow([
+                new Date(),
+                data.fecha,
+                data.pasaje,
+                data.p1,
+                data.p2,
+                data.p3,
+                data.p4,
+                data.p5,
+                data.estado
+            ]);
+
+            return ContentService.createTextOutput("OK");
+        }
+
+    </script>
+
+</body>
+
+</html>

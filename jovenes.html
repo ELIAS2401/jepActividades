@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estudio Bíblico</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="img/favicon.ico" type="image/x-icon" id="favicon">
+    <!-- Librería para leer CSV correctamente -->
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Montserrat:wght@400;500&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+
+    <header class="main-header">
+        <h1 id="titulo-estudio">Cargando...</h1>
+    </header>
+
+    <section class="tabla-wrapper">
+        <table class="tabla-estudio">
+            <thead>
+                <tr>
+                    <th>📅 Día</th>
+                    <th>👤 Joven</th>
+                    <th>📖 Pasaje</th>
+                    <th>⚡ Actividad</th>
+                </tr>
+            </thead>
+            <tbody id="tabla-body">
+            </tbody>
+        </table>
+    </section>
+
+    <script src="jovenes.js"></script>
+</body>
+
+</html>
