@@ -1,83 +1,194 @@
-const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRA3G3mUJqYv04MxWwEes4s8VLUSrmBAa_vFMX0ENGYKx4bxGUCZClJGh2nDKez0FMOVFhnyc9nlRjE/pub?gid=0&single=true&output=csv";
+const sheetEstudioURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRA3G3mUJqYv04MxWwEes4s8VLUSrmBAa_vFMX0ENGYKx4bxGUCZClJGh2nDKez0FMOVFhnyc9nlRjE/pub?gid=0&single=true&output=csv";
+const sheetInfoURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRA3G3mUJqYv04MxWwEes4s8VLUSrmBAa_vFMX0ENGYKx4bxGUCZClJGh2nDKez0FMOVFhnyc9nlRjE/pub?gid=443904791&single=true&output=csv";
 
 const tablaBody = document.getElementById("tabla-body");
 const titulo = document.getElementById("titulo-estudio");
 
-function formatearFecha(fechaTexto) {
-  if (!fechaTexto) return "-";
+let datosEstudio = [];
+let datosInfo = [];
+let mesActual = new Date().getMonth() + 1;
+let mesSeleccionado = mesActual;
 
-  // Ejemplo que llega:
-  // "domingo, 1 de marzo de 2026"
+// ================= CARGA INICIAL =================
 
-  const partes = fechaTexto.split(",");
-  if (partes.length < 2) return fechaTexto;
+Promise.all([
+  cargarCSV(sheetInfoURL),
+  cargarCSV(sheetEstudioURL)
+]).then(([info, estudio]) => {
 
-  const fechaParte = partes[1].trim(); // "1 de marzo de 2026"
+  datosInfo = info;
+  datosEstudio = estudio;
+
+  crearBotonesMeses();
+  renderizarMes(mesActual);
+});
+
+// ================= FUNCIONES =================
+
+function cargarCSV(url) {
+  return new Promise(resolve => {
+    Papa.parse(url, {
+      download: true,
+      header: true,
+      complete: results => resolve(results.data)
+    });
+  });
+}
+
+// ---------------- BOTONES ----------------
+
+function crearBotonesMeses() {
+  const contenedor = document.createElement("div");
+  contenedor.classList.add("meses-container");
+
+  datosInfo.forEach(mes => {
+    if (!mes.idMes) return;
+
+    const btn = document.createElement("button");
+    btn.textContent = mes.Mes;
+    btn.classList.add("btn-mes");
+
+    if (parseInt(mes.idMes) === mesActual) {
+      btn.classList.add("activo");
+    }
+
+    btn.onclick = () => {
+      mesSeleccionado = parseInt(mes.idMes);
+      renderizarMes(mesSeleccionado);
+      document.querySelectorAll(".btn-mes").forEach(b => b.classList.remove("activo"));
+      btn.classList.add("activo");
+    };
+
+    contenedor.appendChild(btn);
+  });
+
+  document.body.insertBefore(contenedor, document.querySelector(".tabla-wrapper"));
+}
+
+// ---------------- RENDER MES ----------------
+
+function renderizarMes(idMes) {
+  tablaBody.innerHTML = "";
+
+  const infoMes = datosInfo.find(m => parseInt(m.idMes) === idMes);
+
+  if (infoMes) {
+    titulo.textContent = `${infoMes.Titulo} - ${infoMes.Libro}`;
+    crearBotonInfo(infoMes.Información);
+  }
+
+  const filas = datosEstudio.filter(f => parseInt(f.Mes) === idMes);
+
+  filas.forEach(fila => {
+    if (!fila.Joven) return;
+
+    const hoy = new Date();
+    const fechaFila = convertirTextoAFecha(fila.Dia);
+
+    const esHoy =
+      fechaFila &&
+      fechaFila.getDate() === hoy.getDate() &&
+      fechaFila.getMonth() === hoy.getMonth() &&
+      fechaFila.getFullYear() === hoy.getFullYear();
+
+    const yaRespondio = fila.Respuesta && fila.Respuesta.trim() !== "";
+
+    const row = document.createElement("tr");
+
+    row.innerHTML = `
+      <td>${fila.Dia}</td>
+      <td><strong>${fila.Joven}</strong></td>
+      <td>${fila.Pasaje || "-"}</td>
+      <td>
+        ${yaRespondio
+        ? `<span class="check">✔ Respondido</span>`
+        : `<button 
+                class="btn-responder"
+                ${!esHoy ? "disabled" : ""}
+                onclick="irAFormulario('${fila.Joven}', '${fila.Pasaje}', '${fila.Dia}')">
+                Responder
+              </button>`
+      }
+      </td>
+    `;
+
+    tablaBody.appendChild(row);
+  });
+}
+
+// ---------------- MODAL INFO ----------------
+
+function crearBotonInfo(texto) {
+  let btnInfo = document.getElementById("btn-info");
+
+  if (!btnInfo) {
+    btnInfo = document.createElement("button");
+    btnInfo.id = "btn-info";
+    btnInfo.textContent = "📖 Información del libro";
+    btnInfo.classList.add("btn-info");
+
+    btnInfo.onclick = () => mostrarModal(texto);
+
+    document.querySelector(".main-header").appendChild(btnInfo);
+  } else {
+    btnInfo.onclick = () => mostrarModal(texto);
+  }
+}
+
+function mostrarModal(texto) {
+  const modal = document.createElement("div");
+  modal.classList.add("modal");
+
+  modal.innerHTML = `
+    <div class="modal-content">
+      <span class="cerrar">&times;</span>
+      <p>${texto}</p>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  modal.querySelector(".cerrar").onclick = () => modal.remove();
+  modal.onclick = e => { if (e.target === modal) modal.remove(); };
+}
+
+// ---------------- UTIL ----------------
+
+function convertirTextoAFecha(texto) {
+  if (!texto) return null;
+
+  const partes = texto.split(",");
+  if (partes.length < 2) return null;
+
+  const fechaParte = partes[1].trim();
   const [dia, , mes, , anio] = fechaParte.split(" ");
 
   const meses = {
-    enero: 0,
-    febrero: 1,
-    marzo: 2,
-    abril: 3,
-    mayo: 4,
-    junio: 5,
-    julio: 6,
-    agosto: 7,
-    septiembre: 8,
-    octubre: 9,
-    noviembre: 10,
-    diciembre: 11
+    enero: 0, febrero: 1, marzo: 2, abril: 3, mayo: 4,
+    junio: 5, julio: 6, agosto: 7, septiembre: 8,
+    octubre: 9, noviembre: 10, diciembre: 11
   };
 
-  const fecha = new Date(anio, meses[mes.toLowerCase()], dia);
-
-  const opciones = {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric"
-  };
-
-  let fechaFormateada = fecha.toLocaleDateString("es-ES", opciones);
-
-  return fechaFormateada.charAt(0).toUpperCase() + fechaFormateada.slice(1);
+  return new Date(anio, meses[mes.toLowerCase()], dia);
 }
 
+function irAFormulario(nombre, pasaje, diaTexto) {
 
-Papa.parse(sheetURL, {
-  download: true,
-  header: true,
-  complete: function(results) {
-    const datos = results.data;
+  const fechaFila = convertirTextoAFecha(diaTexto);
+  const hoy = new Date();
 
-    if (datos.length > 0 && datos[0].Titulo) {
-      titulo.textContent = datos[0].Titulo;
-    }
+  const esHoy =
+    fechaFila &&
+    fechaFila.getDate() === hoy.getDate() &&
+    fechaFila.getMonth() === hoy.getMonth() &&
+    fechaFila.getFullYear() === hoy.getFullYear();
 
-    datos.forEach(fila => {
-      if (!fila.Joven) return;
-
-      const row = document.createElement("tr");
-
-      row.innerHTML = `
-        <td>${formatearFecha(fila.Dia)}</td>
-        <td><strong>${fila.Joven}</strong></td>
-        <td>${fila.Pasaje || "-"}</td>
-        <td>
-          <button class="btn-responder"
-            onclick="irAFormulario('${fila.Joven}', '${fila.Dia}')">
-            Responder
-          </button>
-        </td>
-      `;
-
-      tablaBody.appendChild(row);
-    });
+  if (!esHoy) {
+    alert("Solo se puede responder el día correspondiente.");
+    return;
   }
-});
 
-function irAFormulario(nombre, dia) {
-  const url = `responder.html?nombre=${encodeURIComponent(nombre)}&dia=${encodeURIComponent(dia)}`;
+  const url = `jovenesForm.html?nombre=${encodeURIComponent(nombre)}&pasaje=${encodeURIComponent(pasaje)}&fecha=${encodeURIComponent(diaTexto)}`;
+
   window.location.href = url;
 }
