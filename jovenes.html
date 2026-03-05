@@ -24,6 +24,7 @@
 
     <header class="main-header">
         <h1 id="titulo-estudio">Cargando...</h1>
+        <button onclick="abrirModal()" class="btn-info">Ver info del libro</button>
     </header>
 
     <section class="tabla-wrapper">
@@ -41,6 +42,17 @@
             </tbody>
         </table>
     </section>
+
+    <div id="modal-info" class="modal">
+        <div class="modal-box">
+            <h2 class="modal-title"></h2>
+            <p class="modal-content"></p>
+
+            <button onclick="cerrarModal()" class="btn-info">
+                Cerrar
+            </button>
+        </div>
+    </div>
 
     <script src="jovenes.js"></script>
 </body>

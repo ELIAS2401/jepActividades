@@ -289,3 +289,35 @@ textarea {
     background: rgba(239,68,68,0.15);
     color: #ef4444;
 }
+
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-box {
+    background: rgb(0, 0, 57);
+    padding: 25px;
+    border-radius: 10px;
+    max-width: 500px;
+}
+
+.info-linea{
+    margin-bottom:8px;
+    font-size:15px;
+    line-height:1.5;
+}
+
+.fecha-dia{
+  font-weight:600;
+  text-transform:capitalize;
+}
+
+.fecha-num{
+  font-size:13px;
+  color:#d4d4d4;
+}
