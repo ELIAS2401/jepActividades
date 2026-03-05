@@ -3,93 +3,98 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Formulario de Estudio Bíblico</title>
+    <title>Formulario Estudio Bíblico</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
 
-    <header class="main-header">
-        <h1>Estudio Bíblico Personal</h1>
-        <p>Pasaje leído: <strong>Juan 1:1-15</strong></p>
-    </header>
+<header class="main-header">
+    <h1>Estudio Bíblico Personal</h1>
+    <p>Pasaje leído: <strong></strong></p>
+</header>
 
-    <div class="tabla-wrapper">
-        <form id="formEstudio" class="tabla-estudio" style="padding:1rem; display:block;">
+<div class="tabla-wrapper">
+    <form id="formEstudio" class="tabla-estudio" style="padding:1rem; display:block;">
 
-            <label>1️⃣ ¿Qué está pasando en el pasaje?</label>
-            <textarea required></textarea>
+        <label>1️⃣ ¿Qué está pasando en el pasaje?</label>
+        <textarea name="r1" required></textarea>
 
-            <label>2️⃣ ¿Qué me enseña acerca de Dios?</label>
-            <textarea required></textarea>
+        <label>2️⃣ ¿Qué me enseña acerca de Dios?</label>
+        <textarea name="r2" required></textarea>
 
-            <label>3️⃣ ¿Qué me enseña acerca del ser humano?</label>
-            <textarea required></textarea>
+        <label>3️⃣ ¿Qué me enseña acerca del ser humano?</label>
+        <textarea name="r3" required></textarea>
 
-            <label>4️⃣ ¿Qué debo cambiar o aplicar?</label>
-            <textarea required></textarea>
+        <label>4️⃣ ¿Qué debo cambiar o aplicar?</label>
+        <textarea name="r4" required></textarea>
 
-            <label>5️⃣ Escribí una oración basada en lo leído:</label>
-            <textarea required></textarea>
+        <label>5️⃣ Escribí una oración basada en lo leído:</label>
+        <textarea name="r5" required></textarea>
 
-            <button type="submit" class="btn-responder" style="margin-top:1rem;">
-                Enviar Respuestas
-            </button>
+        <button type="submit" class="btn-responder" style="margin-top:1rem;">
+            Enviar Respuestas
+        </button>
 
-        </form>
-    </div>
-    <script>
+    </form>
+</div>
 
-        const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxCypFfCFbeMe4W8jRQdznu-MuyHqOPNbLdcgocm9eLqnTR7fspHzI0BMWo11ccWBVXPA/exec";
+<script>
 
-        const params = new URLSearchParams(window.location.search);
-        const nombre = params.get("nombre");
-        const pasaje = params.get("pasaje");
+const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxr8Wi1nEQ1lXmSUEeeRIZUhfczuQqzdhhnos14H5PNswCMs08-Mcw155ddeCdQbIRjbA/exec";
 
-        document.querySelector("strong").textContent = pasaje;
+const params = new URLSearchParams(window.location.search);
+const nombre = params.get("nombre");
+const pasaje = params.get("pasaje");
+const fecha = params.get("fecha");
+const mes = params.get("mes");
 
-        document.getElementById("formEstudio").addEventListener("submit", async function (e) {
-            e.preventDefault();
+document.querySelector("strong").textContent = pasaje;
 
-            const respuestas = Array.from(document.querySelectorAll("textarea"))
-                .map(t => t.value.trim());
+document.getElementById("formEstudio").addEventListener("submit", async function(e) {
+    e.preventDefault();
 
-            const respuestaFinal = respuestas.join("\n\n");
+    const formData = new FormData(this);
 
-            try {
+    try {
 
-                const response = await fetch(WEBAPP_URL, {
-                    method: "POST",
-                    mode: "cors",
-                    redirect: "follow",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded"
-                    },
-                    body: new URLSearchParams({
-                        nombre,
-                        pasaje,
-                        respuesta: respuestaFinal
-                    })
-                });
-                const result = await response.json();
-
-                if (result.status === "OK") {
-                    alert("✅ Respuesta enviada correctamente");
-                    window.location.href = "index.html";
-                }
-                else if (result.status === "YA_RESPONDIDA") {
-                    alert("⚠️ Ya fue respondida.");
-                }
-                else {
-                    alert("Error: " + result.message);
-                }
-
-            } catch (err) {
-                alert("Error de conexión.");
-            }
+        const response = await fetch(WEBAPP_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: new URLSearchParams({
+                mes,
+                fecha,
+                nombre,
+                pasaje,
+                r1: formData.get("r1"),
+                r2: formData.get("r2"),
+                r3: formData.get("r3"),
+                r4: formData.get("r4"),
+                r5: formData.get("r5")
+            })
         });
-    </script>
+
+        const result = await response.json();
+
+        if (result.status === "OK") {
+            alert("✅ Respuesta enviada correctamente");
+            window.location.href = "jovenes.html";
+        }
+        else if (result.status === "YA_RESPONDIDA") {
+            alert("⚠️ Ya fue respondida.");
+        }
+        else {
+            alert("Error: " + result.message);
+        }
+
+    } catch (err) {
+        alert("Error de conexión.");
+    }
+});
+
+</script>
 
 </body>
-
 </html>
