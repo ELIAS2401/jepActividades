@@ -39,91 +39,55 @@
         </form>
     </div>
     <script>
-        const SHEET_WEBAPP_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRA3G3mUJqYv04MxWwEes4s8VLUSrmBAa_vFMX0ENGYKx4bxGUCZClJGh2nDKez0FMOVFhnyc9nlRjE/pub?gid=0&single=true&output=csv";
-        // Esta URL la vas a obtener desde Google Apps Script (te explico abajo)
+
+        const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxCypFfCFbeMe4W8jRQdznu-MuyHqOPNbLdcgocm9eLqnTR7fspHzI0BMWo11ccWBVXPA/exec";
+
+        const params = new URLSearchParams(window.location.search);
+        const nombre = params.get("nombre");
+        const pasaje = params.get("pasaje");
+
+        document.querySelector("strong").textContent = pasaje;
 
         document.getElementById("formEstudio").addEventListener("submit", async function (e) {
             e.preventDefault();
 
-            const pasaje = "Juan 1:1-15";
-            const fecha = new Date().toLocaleDateString("es-AR");
+            const respuestas = Array.from(document.querySelectorAll("textarea"))
+                .map(t => t.value.trim());
 
-            const respuestas = Array.from(document.querySelectorAll("textarea")).map(t => t.value.trim());
+            const respuestaFinal = respuestas.join("\n\n");
 
-            const mensaje =
-                `📖 *Estudio Bíblico Personal*
-🗓 Fecha: ${fecha}
-📍 Pasaje: ${pasaje}
-
-━━━━━━━━━━━━━━━
-
-*1️⃣ ¿Qué está pasando?*
-${respuestas[0]}
-
-*2️⃣ ¿Qué me enseña acerca de Dios?*
-${respuestas[1]}
-
-*3️⃣ ¿Qué me enseña acerca del ser humano?*
-${respuestas[2]}
-
-*4️⃣ ¿Qué debo aplicar?*
-${respuestas[3]}
-
-*5️⃣ Oración personal*
-${respuestas[4]}
-
-━━━━━━━━━━━━━━━
-🔥 #EstudioConstante`;
-
-            // Copiar al portapapeles
-            await navigator.clipboard.writeText(mensaje);
-
-            // Enviar a Google Sheets
             try {
-                await fetch(SHEET_WEBAPP_URL, {
+
+                const response = await fetch(WEBAPP_URL, {
                     method: "POST",
-                    mode: "no-cors",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        fecha,
+                    mode: "cors",
+                    redirect: "follow",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: new URLSearchParams({
+                        nombre,
                         pasaje,
-                        p1: respuestas[0],
-                        p2: respuestas[1],
-                        p3: respuestas[2],
-                        p4: respuestas[3],
-                        p5: respuestas[4],
-                        estado: "Respondido"
+                        respuesta: respuestaFinal
                     })
                 });
+                const result = await response.json();
+
+                if (result.status === "OK") {
+                    alert("✅ Respuesta enviada correctamente");
+                    window.location.href = "index.html";
+                }
+                else if (result.status === "YA_RESPONDIDA") {
+                    alert("⚠️ Ya fue respondida.");
+                }
+                else {
+                    alert("Error: " + result.message);
+                }
+
             } catch (err) {
-                console.log("Error enviando a Sheets");
+                alert("Error de conexión.");
             }
-
-            // Abrir WhatsApp
-            const texto = encodeURIComponent(mensaje);
-            window.open(`https://wa.me/?text=${texto}`, "_blank");
-
-            alert("Mensaje copiado ✅ y marcado como respondido.");
         });
-        function doPost(e) {
-            const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-            const data = JSON.parse(e.postData.contents);
-
-            sheet.appendRow([
-                new Date(),
-                data.fecha,
-                data.pasaje,
-                data.p1,
-                data.p2,
-                data.p3,
-                data.p4,
-                data.p5,
-                data.estado
-            ]);
-
-            return ContentService.createTextOutput("OK");
-        }
-
     </script>
 
 </body>

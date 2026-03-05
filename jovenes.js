@@ -91,26 +91,39 @@ function renderizarMes(idMes) {
       fechaFila.getMonth() === hoy.getMonth() &&
       fechaFila.getFullYear() === hoy.getFullYear();
 
-    const yaRespondio = fila.Respuesta && fila.Respuesta.trim() !== "";
+    const estado = (fila.Estado || "").trim().toLowerCase();
 
     const row = document.createElement("tr");
 
+    let estadoHTML = "";
+    let botonHTML = "";
+
+    if (estado === "respondida" || estado === "respondido") {
+      estadoHTML = `<span class="estado verde">Contestada</span>`;
+      botonHTML = `<span class="check">✔</span>`;
+    }
+    else if (estado === "pendiente") {
+      estadoHTML = `<span class="estado amarillo">Pendiente</span>`;
+      botonHTML = `
+    <button 
+      class="btn-responder"
+      ${!esHoy ? "disabled" : ""}
+      onclick="irAFormulario('${fila.Joven}', '${fila.Pasaje}', '${fila.Dia}')">
+      Responder
+    </button>`;
+    }
+    else {
+      estadoHTML = `<span class="estado rojo">Sin contestar</span>`;
+      botonHTML = `<span class="estado rojo">Sin contestar</span>`;
+    }
+
     row.innerHTML = `
-      <td>${fila.Dia}</td>
-      <td><strong>${fila.Joven}</strong></td>
-      <td>${fila.Pasaje || "-"}</td>
-      <td>
-        ${yaRespondio
-        ? `<span class="check">✔ Respondido</span>`
-        : `<button 
-                class="btn-responder"
-                ${!esHoy ? "disabled" : ""}
-                onclick="irAFormulario('${fila.Joven}', '${fila.Pasaje}', '${fila.Dia}')">
-                Responder
-              </button>`
-      }
-      </td>
-    `;
+  <td>${fila.Dia}</td>
+  <td><strong>${fila.Joven}</strong></td>
+  <td>${fila.Pasaje || "-"}</td>
+  <td>${botonHTML}</td>
+  <td>${estadoHTML}</td>
+`;
 
     tablaBody.appendChild(row);
   });
