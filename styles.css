@@ -266,8 +266,6 @@ textarea {
     background-color: #475569;
 }
 
-
-
 .estado {
     font-weight: 600;
     padding: 4px 8px;
@@ -300,7 +298,7 @@ textarea {
 }
 
 .modal-box {
-    background: rgb(0, 0, 57);
+    background: rgb(0, 10, 57);
     padding: 25px;
     border-radius: 10px;
     max-width: 500px;
