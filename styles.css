@@ -409,3 +409,25 @@ textarea {
 @keyframes spin{
     to{ transform:rotate(360deg); }
 }
+
+.cerrar-modal{
+position:absolute;
+top:20px;
+right:25px;
+font-size:28px;
+color:white;
+cursor:pointer;
+z-index:10;
+background:rgba(0,0,0,0.6);
+width:40px;
+height:40px;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+transition:0.2s;
+}
+
+.cerrar-modal:hover{
+background:#1e3a8a;
+}
