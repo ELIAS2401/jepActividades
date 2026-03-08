@@ -409,7 +409,7 @@ textarea {
 @keyframes spin{
     to{ transform:rotate(360deg); }
 }
-
+/* nuevos estilos */
 .cerrar-modal{
 position:absolute;
 top:20px;
