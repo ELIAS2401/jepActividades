@@ -1,6 +1,6 @@
 const sheetEstudioURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRA3G3mUJqYv04MxWwEes4s8VLUSrmBAa_vFMX0ENGYKx4bxGUCZClJGh2nDKez0FMOVFhnyc9nlRjE/pub?gid=0&single=true&output=csv";
 const sheetInfoURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRA3G3mUJqYv04MxWwEes4s8VLUSrmBAa_vFMX0ENGYKx4bxGUCZClJGh2nDKez0FMOVFhnyc9nlRjE/pub?gid=443904791&single=true&output=csv";
-
+const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwY_ajvtgmLZB1RJVJflT5pWKKV-K_pgGcl33f2vP2dlbFdgVBSYfZuoN9ZM-RrdKv4Ig/exec";
 const tablaBody = document.getElementById("tabla-body");
 const titulo = document.getElementById("titulo-estudio");
 
@@ -117,7 +117,13 @@ function renderizarMes(idMes) {
     if (yaRespondio) {
 
       estadoHTML = `<span class="estado verde">Contestada</span>`;
-      botonHTML = `<span class="check">✔</span>`;
+
+      botonHTML = `
+        <button class="btn-responder"
+          onclick="verRespuestas('${fila.ID}')">
+          👁 Ver respuestas
+        </button>
+      `;
 
     }
     else if (esHoy) {
@@ -243,4 +249,41 @@ function abrirModal() {
 
 function cerrarModal() {
   document.getElementById("modal-info").style.display = "none";
+}
+
+async function verRespuestas(id) {
+
+  try {
+
+    const res = await fetch(`${WEBAPP_URL}?idEstudio=${id}`);
+    const data = await res.json();
+
+    if (data.status === "YA_RESPONDIDA") {
+      abrirModalRespuestas(data);
+    } else {
+      alert("Todavía no hay respuestas.");
+    }
+
+  } catch (err) {
+    alert("Error al cargar respuestas");
+  }
+
+}
+
+function abrirModalRespuestas(data) {
+
+  const modal = document.getElementById("modal-respuestas");
+
+  document.getElementById("mr1").textContent = data.r1 || "-";
+  document.getElementById("mr2").textContent = data.r2 || "-";
+  document.getElementById("mr3").textContent = data.r3 || "-";
+  document.getElementById("mr4").textContent = data.r4 || "-";
+  document.getElementById("mr5").textContent = data.r5 || "-";
+
+  modal.style.display = "flex";
+
+}
+
+function cerrarModalRespuestas() {
+  document.getElementById("modal-respuestas").style.display = "none";
 }
