@@ -55,31 +55,48 @@
     </div>
 
     <div id="modal-respuestas" class="modal">
-        <div class="modal-box">
+        <div class="modal-box modal-respuestas-box">
 
             <span class="cerrar" onclick="cerrarModalRespuestas()">✖</span>
 
-            <h2>Respuestas del estudio</h2>
+            <h2 class="modal-title">📖 Respuestas del estudio</h2>
 
-            <p><strong>1️⃣ ¿Qué está pasando?</strong></p>
-            <p id="mr1"></p>
+            <!-- LOADER -->
+            <div id="loader-respuestas" class="loader-respuestas">
+                ⏳ Cargando respuestas...
+            </div>
 
-            <p><strong>2️⃣ ¿Qué enseña de Dios?</strong></p>
-            <p id="mr2"></p>
+            <div id="contenido-respuestas">
 
-            <p><strong>3️⃣ ¿Qué enseña del ser humano?</strong></p>
-            <p id="mr3"></p>
+                <div class="respuesta-card">
+                    <h3>1️⃣ ¿Qué está pasando?</h3>
+                    <p id="mr1"></p>
+                </div>
 
-            <p><strong>4️⃣ ¿Qué debo aplicar?</strong></p>
-            <p id="mr4"></p>
+                <div class="respuesta-card">
+                    <h3>2️⃣ ¿Qué enseña acerca de Dios?</h3>
+                    <p id="mr2"></p>
+                </div>
 
-            <p><strong>5️⃣ Oración</strong></p>
-            <p id="mr5"></p>
+                <div class="respuesta-card">
+                    <h3>3️⃣ ¿Qué enseña del ser humano?</h3>
+                    <p id="mr3"></p>
+                </div>
 
+                <div class="respuesta-card">
+                    <h3>4️⃣ ¿Qué debo aplicar?</h3>
+                    <p id="mr4"></p>
+                </div>
+
+                <div class="respuesta-card">
+                    <h3>5️⃣ Oración</h3>
+                    <p id="mr5"></p>
+                </div>
+
+            </div>
         </div>
-    </div>
 
-    <script src="jovenes.js"></script>
+        <script src="jovenes.js"></script>
 </body>
 
 </html>

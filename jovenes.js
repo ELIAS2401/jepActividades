@@ -1,6 +1,6 @@
 const sheetEstudioURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRA3G3mUJqYv04MxWwEes4s8VLUSrmBAa_vFMX0ENGYKx4bxGUCZClJGh2nDKez0FMOVFhnyc9nlRjE/pub?gid=0&single=true&output=csv";
 const sheetInfoURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRA3G3mUJqYv04MxWwEes4s8VLUSrmBAa_vFMX0ENGYKx4bxGUCZClJGh2nDKez0FMOVFhnyc9nlRjE/pub?gid=443904791&single=true&output=csv";
-const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwY_ajvtgmLZB1RJVJflT5pWKKV-K_pgGcl33f2vP2dlbFdgVBSYfZuoN9ZM-RrdKv4Ig/exec";
+const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzI33eyhIu3JsecAlM_R0oVA1PnccmHihBYcbmvyNSxZo5xekwjdQSF-hqfRju2R-0eEA/exec";
 const tablaBody = document.getElementById("tabla-body");
 const titulo = document.getElementById("titulo-estudio");
 
@@ -9,6 +9,9 @@ let datosInfo = [];
 
 const mesActual = new Date().getMonth() + 1;
 let mesSeleccionado = mesActual;
+
+const loaderRespuestas = document.getElementById("loader-respuestas");
+const contenidoRespuestas = document.getElementById("contenido-respuestas");
 
 /* ---------------- CARGA DE DATOS ---------------- */
 
@@ -253,19 +256,41 @@ function cerrarModal() {
 
 async function verRespuestas(id) {
 
+  const modal = document.getElementById("modal-respuestas");
+
+  modal.style.display = "flex";
+
+  loaderRespuestas.style.display = "block";
+  contenidoRespuestas.style.display = "none";
+
   try {
 
     const res = await fetch(`${WEBAPP_URL}?idEstudio=${id}`);
     const data = await res.json();
 
     if (data.status === "YA_RESPONDIDA") {
-      abrirModalRespuestas(data);
+
+      document.getElementById("mr1").textContent = data.r1 || "-";
+      document.getElementById("mr2").textContent = data.r2 || "-";
+      document.getElementById("mr3").textContent = data.r3 || "-";
+      document.getElementById("mr4").textContent = data.r4 || "-";
+      document.getElementById("mr5").textContent = data.r5 || "-";
+
+      loaderRespuestas.style.display = "none";
+      contenidoRespuestas.style.display = "block";
+
     } else {
+
+      loaderRespuestas.style.display = "none";
       alert("Todavía no hay respuestas.");
+
     }
 
   } catch (err) {
+
+    loaderRespuestas.style.display = "none";
     alert("Error al cargar respuestas");
+
   }
 
 }

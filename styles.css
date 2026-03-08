@@ -326,3 +326,86 @@ textarea {
     font-size: 13px;
     color: #d4d4d4;
 }
+
+/* ============================= */
+/* MODAL RESPUESTAS MEJORADO */
+/* ============================= */
+
+.modal-respuestas-box {
+    width: 90%;
+    max-width: 700px;
+    max-height: 85vh;
+    overflow-y: auto;
+    background: #020617;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+}
+
+.modal-title {
+    text-align: center;
+    margin-bottom: 20px;
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+}
+
+/* tarjetas */
+
+.respuesta-card {
+    background: rgba(30, 41, 59, 0.8);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: 0.2s;
+}
+
+.respuesta-card:hover {
+    background: rgba(30, 41, 59, 1);
+}
+
+.respuesta-card h3 {
+    font-size: 14px;
+    color: #60a5fa;
+    margin-bottom: 6px;
+}
+
+.respuesta-card p {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #e2e8f0;
+}
+
+/* scroll bonito */
+
+.modal-respuestas-box::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modal-respuestas-box::-webkit-scrollbar-thumb {
+    background: #1e3a8a;
+    border-radius: 4px;
+}
+
+.loader-respuestas{
+    text-align:center;
+    padding:40px 20px;
+    font-size:16px;
+    color:#94a3b8;
+}
+
+.loader-respuestas::after{
+    content:"";
+    display:inline-block;
+    width:18px;
+    height:18px;
+    border:3px solid #1e3a8a;
+    border-top-color:transparent;
+    border-radius:50%;
+    margin-left:10px;
+    animation:spin 1s linear infinite;
+}
+
+@keyframes spin{
+    to{ transform:rotate(360deg); }
+}
