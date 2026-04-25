@@ -106,9 +106,8 @@ function renderizarMes(idMes) {
       ? obtenerDiaSemana(fechaFila)
       : "";
 
-    const esHoy =
+    const esMismoMes =
       fechaFila &&
-      fechaFila.getDate() === hoy.getDate() &&
       fechaFila.getMonth() === hoy.getMonth() &&
       fechaFila.getFullYear() === hoy.getFullYear();
 
@@ -129,7 +128,7 @@ function renderizarMes(idMes) {
       `;
 
     }
-    else if (esHoy) {
+    else if (esMismoMes) {
 
       estadoHTML = `<span class="estado amarillo">Pendiente</span>`;
 
