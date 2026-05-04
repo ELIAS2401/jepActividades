@@ -9,7 +9,7 @@
     <meta http-equiv="Cache-Control" content="no-store" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 </head>
 
 <body>
@@ -35,20 +35,24 @@
 
         <form id="formEstudio" class="tabla-estudio" style="padding:1rem;display:none;">
 
-            <label>1️⃣ ¿Qué entendiste/aprendiste del pasaje?</label>
+            <label id="fp1"></label>
             <textarea name="r1" required></textarea>
 
-            <label>2️⃣ ¿Hay algo que te desafía o no entendés?</label>
+            <label id="fp2"></label>
             <textarea name="r2" required></textarea>
 
-            <label>3️⃣ Escribí una oración relacionada a lo leído:</label>
+            <label id="fp3"></label>
             <textarea name="r3" required></textarea>
 
-            <!-- <label>4️⃣ ¿Qué debo cambiar o aplicar?</label>
-            <textarea name="r4" required></textarea>
+            <div id="bloque4" style="display:none;">
+                <label id="fp4"></label>
+                <textarea name="r4"></textarea>
+            </div>
 
-            <label>5️⃣ Escribí una oración basada en lo leído</label>
-            <textarea name="r5" required></textarea> -->
+            <div id="bloque5" style="display:none;">
+                <label id="fp5"></label>
+                <textarea name="r5"></textarea>
+            </div>
 
             <button type="submit" class="btn-responder" id="btnEnviar">
                 Enviar respuestas
@@ -153,9 +157,9 @@
                         pasaje,
                         r1: formData.get("r1"),
                         r2: formData.get("r2"),
-                        r3: formData.get("r3")
-                        // r4: formData.get("r4"),
-                        // r5: formData.get("r5")
+                        r3: formData.get("r3"),
+                        r4: formData.get("r4"),
+                        r5: formData.get("r5")
                     })
                 })
 
@@ -188,6 +192,38 @@
 
         })
 
+        async function cargarPreguntas() {
+
+            try {
+
+                const res = await fetch("https://docs.google.com/spreadsheets/d/1M8gOMM9LyiuZMKPGFXETWRvD6XR6jIhZHDl9hf2CtpU/export?format=csv&gid=1521895597");
+                const text = await res.text();
+
+                const parsed = Papa.parse(text, { header: true }).data;
+
+                const preguntas = parsed.find(p => p.idMes == mes);
+
+                // fallback por si no hay preguntas
+                document.getElementById("fp1").textContent = preguntas?.p1 || "¿Qué entendiste del pasaje?";
+                document.getElementById("fp2").textContent = preguntas?.p2 || "¿Hay algo que no entendés o te desafía?";
+                document.getElementById("fp3").textContent = preguntas?.p3 || "Escribí una oración basada en lo leído";
+
+                if (preguntas?.p4) {
+                    document.getElementById("bloque4").style.display = "block";
+                    document.getElementById("fp4").textContent = preguntas.p4;
+                }
+
+                if (preguntas?.p5) {
+                    document.getElementById("bloque5").style.display = "block";
+                    document.getElementById("fp5").textContent = preguntas.p5;
+                }
+
+            } catch (err) {
+                console.error("Error cargando preguntas", err);
+            }
+        }
+
+        cargarPreguntas();
     </script>
 
 </body>

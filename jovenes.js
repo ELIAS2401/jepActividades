@@ -1,12 +1,14 @@
 const sheetEstudioURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRA3G3mUJqYv04MxWwEes4s8VLUSrmBAa_vFMX0ENGYKx4bxGUCZClJGh2nDKez0FMOVFhnyc9nlRjE/pub?gid=0&single=true&output=csv";
 const sheetInfoURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRA3G3mUJqYv04MxWwEes4s8VLUSrmBAa_vFMX0ENGYKx4bxGUCZClJGh2nDKez0FMOVFhnyc9nlRjE/pub?gid=443904791&single=true&output=csv";
-const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzMrS09Kxn0r3NG4dgcoz4G79TlXfsTfMKOR_7G4RqKxKo8UZseIB8B1-5ngr4e-vem8g/exec";
+const sheetPreguntasURL = "https://docs.google.com/spreadsheets/d/1M8gOMM9LyiuZMKPGFXETWRvD6XR6jIhZHDl9hf2CtpU/export?format=csv&gid=1521895597";
+const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbz7O3TMJZH56ms3PGkCzldX5O5vVfkyhKTN0z2C_yQOVRQRQqiyGukbXRyyNc8BIgs3jA/exec";
 
 const tablaBody = document.getElementById("tabla-body");
 const titulo = document.getElementById("titulo-estudio");
 
 let datosEstudio = [];
 let datosInfo = [];
+let datosPreguntas = [];
 
 const mesActual = new Date().getMonth() + 1;
 let mesSeleccionado = mesActual;
@@ -18,11 +20,13 @@ const contenidoRespuestas = document.getElementById("contenido-respuestas");
 
 Promise.all([
   cargarCSV(sheetInfoURL),
-  cargarCSV(sheetEstudioURL)
-]).then(([info, estudio]) => {
+  cargarCSV(sheetEstudioURL),
+  cargarCSV(sheetPreguntasURL)
+]).then(([info, estudio, preguntas]) => {
 
   datosInfo = info;
   datosEstudio = estudio;
+  datosPreguntas = preguntas;
 
   crearBotonesMeses();
   renderizarMes(mesActual);
@@ -38,7 +42,13 @@ function cargarCSV(url) {
   });
 }
 
-/* ---------------- BOTONES DE MESES ---------------- */
+/* ---------------- PREGUNTAS ---------------- */
+
+function obtenerPreguntas(mes) {
+  return datosPreguntas.find(p => parseInt(p.idMes) === parseInt(mes));
+}
+
+/* ---------------- BOTONES ---------------- */
 
 function crearBotonesMeses() {
 
@@ -79,7 +89,7 @@ function crearBotonesMeses() {
   );
 }
 
-/* ---------------- RENDER TABLA ---------------- */
+/* ---------------- TABLA ---------------- */
 
 function renderizarMes(idMes) {
 
@@ -128,8 +138,7 @@ function renderizarMes(idMes) {
         </button>
       `;
 
-    }
-    else if (esMismoMes) {
+    } else if (esMismoMes) {
 
       estadoHTML = `<span class="estado amarillo">Pendiente</span>`;
 
@@ -139,14 +148,12 @@ function renderizarMes(idMes) {
           Responder
         </button>`;
 
-    }
-    else if (fechaFila && fechaFila < hoy) {
+    } else if (fechaFila && fechaFila < hoy) {
 
       estadoHTML = `<span class="estado rojo">No contestada</span>`;
       botonHTML = `<span class="estado rojo">No disponible</span>`;
 
-    }
-    else {
+    } else {
 
       estadoHTML = `<span class="estado gris">Próximamente</span>`;
       botonHTML = `<span class="estado gris">-</span>`;
@@ -193,19 +200,13 @@ function convertirTextoAFecha(texto) {
 function obtenerDiaSemana(fecha) {
 
   const dias = [
-    "domingo",
-    "lunes",
-    "martes",
-    "miércoles",
-    "jueves",
-    "viernes",
-    "sábado"
+    "domingo","lunes","martes","miércoles","jueves","viernes","sábado"
   ];
 
   return dias[fecha.getDay()];
 }
 
-/* ---------------- FORMULARIO ---------------- */
+/* ---------------- FORM ---------------- */
 
 function irAFormulario(id, nombre, pasaje, fecha, mes) {
 
@@ -220,39 +221,7 @@ function irAFormulario(id, nombre, pasaje, fecha, mes) {
 
 }
 
-/* ---------------- MODAL ---------------- */
-
-function abrirModal() {
-
-  const infoMes = datosInfo.find(
-    m => parseInt(m.idMes) === mesSeleccionado
-  );
-
-  if (!infoMes) return;
-
-  const modal = document.getElementById("modal-info");
-
-  modal.querySelector(".modal-title").textContent =
-    `${infoMes.Titulo} - ${infoMes.Libro}`;
-
-  const texto =
-    infoMes["Información"] || "Sin información disponible.";
-
-  const partes = texto.split("-");
-
-  const html = partes
-    .map(p => `<div class="info-linea">${p.trim()}</div>`)
-    .join("");
-
-  modal.querySelector(".modal-content").innerHTML = html;
-
-  modal.style.display = "flex";
-
-}
-
-function cerrarModal() {
-  document.getElementById("modal-info").style.display = "none";
-}
+/* ---------------- RESPUESTAS ---------------- */
 
 async function verRespuestas(id) {
 
@@ -270,11 +239,36 @@ async function verRespuestas(id) {
 
     if (data.status === "YA_RESPONDIDA") {
 
+      const fila = datosEstudio.find(f => f.ID == id);
+      const preguntas = obtenerPreguntas(fila?.Mes);
+
+      // Reset UI
+      document.getElementById("card4")?.style.setProperty("display", "none");
+      document.getElementById("card5")?.style.setProperty("display", "none");
+
+      // TITULOS (fallback por si no hay preguntas)
+      document.getElementById("t1").textContent = preguntas?.p1 || "Pregunta 1";
+      document.getElementById("t2").textContent = preguntas?.p2 || "Pregunta 2";
+      document.getElementById("t3").textContent = preguntas?.p3 || "Pregunta 3";
+
+      // RESPUESTAS
       document.getElementById("mr1").textContent = data.r1 || "-";
       document.getElementById("mr2").textContent = data.r2 || "-";
       document.getElementById("mr3").textContent = data.r3 || "-";
-      // document.getElementById("mr4").textContent = data.r4 || "-";
-      // document.getElementById("mr5").textContent = data.r5 || "-";
+
+      // P4
+      if (data.r4) {
+        document.getElementById("card4").style.display = "block";
+        document.getElementById("t4").textContent = preguntas?.p4 || "Pregunta 4";
+        document.getElementById("mr4").textContent = data.r4;
+      }
+
+      // P5
+      if (data.r5) {
+        document.getElementById("card5").style.display = "block";
+        document.getElementById("t5").textContent = preguntas?.p5 || "Pregunta 5";
+        document.getElementById("mr5").textContent = data.r5;
+      }
 
       loaderRespuestas.style.display = "none";
       contenidoRespuestas.style.display = "block";
@@ -295,20 +289,38 @@ async function verRespuestas(id) {
 
 }
 
-function abrirModalRespuestas(data) {
+function cerrarModalRespuestas() {
+  document.getElementById("modal-respuestas").style.display = "none";
+}
 
-  const modal = document.getElementById("modal-respuestas");
+function abrirModal() {
 
-  document.getElementById("mr1").textContent = data.r1 || "-";
-  document.getElementById("mr2").textContent = data.r2 || "-";
-  document.getElementById("mr3").textContent = data.r3 || "-";
-  // document.getElementById("mr4").textContent = data.r4 || "-";
-  // document.getElementById("mr5").textContent = data.r5 || "-";
+  const infoMes = datosInfo.find(
+    m => parseInt(m.idMes) === mesSeleccionado
+  );
+
+  if (!infoMes) return;
+
+  const modal = document.getElementById("modal-info");
+
+  modal.querySelector(".modal-title").textContent =
+    `${infoMes.Titulo} - ${infoMes.Libro}`;
+
+  const texto =
+    infoMes["Información"] || "Sin información disponible.";
+
+  const partes = texto.split("\n");
+
+  const html = partes
+    .map(p => `<div class="info-linea">${p.trim()}</div>`)
+    .join("");
+
+  modal.querySelector(".modal-content").innerHTML = html;
 
   modal.style.display = "flex";
 
 }
 
-function cerrarModalRespuestas() {
-  document.getElementById("modal-respuestas").style.display = "none";
+function cerrarModal() {
+  document.getElementById("modal-info").style.display = "none";
 }
