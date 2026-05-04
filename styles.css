@@ -236,16 +236,15 @@ textarea {
 }
 
 .modal {
-    display: none;
+    display: none; /* oculto por defecto */
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.5);
 
-    display: flex;
     justify-content: center;
     align-items: center;
 
-    padding: 10px; /* 🔥 clave mobile */
+    padding: 10px;
 }
 
 .modal-content {
