@@ -1,6 +1,7 @@
 const sheetEstudioURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRA3G3mUJqYv04MxWwEes4s8VLUSrmBAa_vFMX0ENGYKx4bxGUCZClJGh2nDKez0FMOVFhnyc9nlRjE/pub?gid=0&single=true&output=csv";
 const sheetInfoURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRA3G3mUJqYv04MxWwEes4s8VLUSrmBAa_vFMX0ENGYKx4bxGUCZClJGh2nDKez0FMOVFhnyc9nlRjE/pub?gid=443904791&single=true&output=csv";
-const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzI33eyhIu3JsecAlM_R0oVA1PnccmHihBYcbmvyNSxZo5xekwjdQSF-hqfRju2R-0eEA/exec";
+const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzMrS09Kxn0r3NG4dgcoz4G79TlXfsTfMKOR_7G4RqKxKo8UZseIB8B1-5ngr4e-vem8g/exec";
+
 const tablaBody = document.getElementById("tabla-body");
 const titulo = document.getElementById("titulo-estudio");
 
@@ -272,8 +273,8 @@ async function verRespuestas(id) {
       document.getElementById("mr1").textContent = data.r1 || "-";
       document.getElementById("mr2").textContent = data.r2 || "-";
       document.getElementById("mr3").textContent = data.r3 || "-";
-      document.getElementById("mr4").textContent = data.r4 || "-";
-      document.getElementById("mr5").textContent = data.r5 || "-";
+      // document.getElementById("mr4").textContent = data.r4 || "-";
+      // document.getElementById("mr5").textContent = data.r5 || "-";
 
       loaderRespuestas.style.display = "none";
       contenidoRespuestas.style.display = "block";
@@ -301,8 +302,8 @@ function abrirModalRespuestas(data) {
   document.getElementById("mr1").textContent = data.r1 || "-";
   document.getElementById("mr2").textContent = data.r2 || "-";
   document.getElementById("mr3").textContent = data.r3 || "-";
-  document.getElementById("mr4").textContent = data.r4 || "-";
-  document.getElementById("mr5").textContent = data.r5 || "-";
+  // document.getElementById("mr4").textContent = data.r4 || "-";
+  // document.getElementById("mr5").textContent = data.r5 || "-";
 
   modal.style.display = "flex";
 
