@@ -324,3 +324,11 @@ function abrirModal() {
 function cerrarModal() {
   document.getElementById("modal-info").style.display = "none";
 }
+
+const modalInfo = document.getElementById("modal-info");
+
+modalInfo.addEventListener("click", function (e) {
+  if (e.target === modalInfo) {
+    cerrarModal();
+  }
+});

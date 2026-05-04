@@ -236,19 +236,22 @@ textarea {
 }
 
 .modal {
+    display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.5);
+
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
+
+    padding: 10px; /* 🔥 clave mobile */
 }
 
 .modal-content {
     background: #0f172a;
     padding: 20px;
     border-radius: 12px;
-    max-width: 500px;
 }
 
 .cerrar {
@@ -295,20 +298,20 @@ textarea {
     color: #ef4444;
 }
 
-.modal {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    justify-content: center;
-    align-items: center;
-}
+
 
 .modal-box {
     background: rgb(0, 10, 57);
     padding: 25px;
     border-radius: 10px;
+
+    width: 90%;
     max-width: 500px;
+
+    max-height: 80vh;   /* 🔥 límite vertical */
+    overflow-y: auto;   /* 🔥 scroll interno */
+
+    box-sizing: border-box;
 }
 
 .info-linea {
