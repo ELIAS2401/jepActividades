@@ -101,9 +101,19 @@ function renderizarMes(idMes) {
     titulo.textContent = `${infoMes.Titulo} - ${infoMes.Libro}`;
   }
 
-  const filas = datosEstudio.filter(
-    f => parseInt(f.Mes) === idMes
-  );
+  const filas = datosEstudio.filter(f => {
+
+    const coincideMes =
+      parseInt(f.Mes) === idMes;
+
+    const coincideNombre =
+      !textoBusqueda ||
+      (f.Joven || "")
+        .toLowerCase()
+        .includes(textoBusqueda);
+
+    return coincideMes && coincideNombre;
+  });
 
   const hoy = new Date();
 
@@ -200,7 +210,7 @@ function convertirTextoAFecha(texto) {
 function obtenerDiaSemana(fecha) {
 
   const dias = [
-    "domingo","lunes","martes","miércoles","jueves","viernes","sábado"
+    "domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"
   ];
 
   return dias[fecha.getDay()];
@@ -331,4 +341,12 @@ modalInfo.addEventListener("click", function (e) {
   if (e.target === modalInfo) {
     cerrarModal();
   }
+});
+
+const filtroJoven = document.getElementById("filtro-joven");
+let textoBusqueda = "";
+
+filtroJoven?.addEventListener("input", (e) => {
+  textoBusqueda = e.target.value.toLowerCase();
+  renderizarMes(mesSeleccionado);
 });
